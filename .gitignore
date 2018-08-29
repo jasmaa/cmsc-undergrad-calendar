@@ -110,3 +110,4 @@ venv.bak/
 dmypy.json
 
 secret.txt
+secret.py

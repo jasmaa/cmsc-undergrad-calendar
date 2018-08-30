@@ -4,6 +4,7 @@ from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
 
+import pytz
 import cmsc_calendar
 
 """
@@ -37,16 +38,17 @@ def main():
     goog_cal = service.calendars().insert(body=calendar).execute()
 
     # add events
+    est = pytz.timezone("US/Eastern")
     for e in c.events:
         event = {
             'summary':e.title,
             'description':e.content,
             'start':{
-                'dateTime':e.get_start()+'-04:00',
+                'dateTime':e.get_start()+('-04:00' if bool(est.localize(e.start_time).dst()) else '-05:00'),
                 'timeZone':'America/New_York'
             },
             'end':{
-                'dateTime':e.get_end()+'-04:00',
+                'dateTime':e.get_end()+('-04:00' if bool(est.localize(e.end_time).dst()) else '-05:00'),
                 'timeZone':'America/New_York'
             }
         }

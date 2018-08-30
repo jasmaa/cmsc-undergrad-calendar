@@ -4,8 +4,6 @@ import pprint
 import time
 import dateparser
 
-import secret
-
 class Event():
     """
     Event obj for calendar
@@ -26,9 +24,9 @@ class Event():
         return self.title + ": " + self.content
 
     def get_start(self):
-        return "T".join(str(self.start_time).split(" "))[:-7]
+        return "T".join(str(self.start_time).split(" "))
     def get_end(self):
-        return "T".join(str(self.end_time).split(" "))[:-7]
+        return "T".join(str(self.end_time).split(" "))
 
 class Calendar():
     """
@@ -56,7 +54,7 @@ class Calendar():
     def get_event_links(self, driver, base):
         # gets list of event links
         event_links = set()
-        """
+        
         for _ in range(12):
             time.sleep(1)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -69,10 +67,6 @@ class Calendar():
                     continue
                 
             driver.find_element_by_class_name('icon-after').click()
-        """
-
-        # remove me
-        event_links = secret.event_links
 
         return event_links
         
@@ -121,4 +115,3 @@ class Calendar():
             end_time = date + " " + end
 
         return dateparser.parse(start_time), dateparser.parse(end_time)
-                  

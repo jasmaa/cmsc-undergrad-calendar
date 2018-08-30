@@ -1,2 +1,5 @@
 selenium
 bs4
+dateparser
+google-api-python-client
+oauth2client

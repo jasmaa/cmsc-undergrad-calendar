@@ -1,3 +1,3 @@
 # TODO
 
-  - Continuous updates
+  - ~~Continuous updates~~

@@ -110,7 +110,6 @@ venv.bak/
 dmypy.json
 
 # my stuff
-secret.txt
-secret.py
 credentials.json
 token.json
+event_log.txt

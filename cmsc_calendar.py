@@ -14,11 +14,12 @@ class Event():
     end_time : end unix time
     """
 
-    def __init__(self, t, c, st, et):
+    def __init__(self, t, c, st, et, href):
         self.title = t
         self.content = c
         self.start_time = st
         self.end_time = et
+        self.href = href
 
     def __str__(self):
         return self.title + ": " + self.content
@@ -95,7 +96,7 @@ class Calendar():
                 
             start_time, end_time = Calendar.parse_time(raw_single, raw_start, raw_end)
             
-            event = Event(title, content, start_time, end_time)
+            event = Event(title, content, start_time, end_time, link)
             self.events.append(event)
             
     @staticmethod

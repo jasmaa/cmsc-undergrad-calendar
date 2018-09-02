@@ -6,6 +6,7 @@ from oauth2client import file, client, tools
 
 import pytz
 import cmsc_calendar
+import secret
 
 """
 Modified quickstart code
@@ -13,11 +14,9 @@ Modified quickstart code
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/calendar'
+CAL_ID = ""
 
 def main():
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's calendar.
-    """
     # Get creds to use api
     store = file.Storage('token.json')
     creds = store.get()
@@ -26,20 +25,34 @@ def main():
         creds = tools.run_flow(flow, store)
     service = build('calendar', 'v3', http=creds.authorize(Http()))
 
+    # Get event log
+    with open('event_log.txt', 'a+') as f:
+        f.close()
+    with open('event_log.txt', 'r+') as f:
+        event_log = set(f.read().split("\n"))
+
+    # Set google calendar
+    if CAL_ID == "":
+        # make google calendar
+        calendar = {
+            'summary': 'CMSC Undergrad Events',
+            'timeZone': 'America/New_York'
+        }
+        goog_cal = service.calendars().insert(body=calendar).execute()
+    else:
+        goog_cal = service.calendarList().get(calendarId=CAL_ID).execute()
+
     # get cmsc calendar
     c = cmsc_calendar.Calendar()
     c.connect()
 
-    # make google calendar
-    calendar = {
-        'summary': 'CMSC Undergrad Events',
-        'timeZone': 'America/New_York'
-    }
-    goog_cal = service.calendars().insert(body=calendar).execute()
-
     # add events
     est = pytz.timezone("US/Eastern")
     for e in c.events:
+        # skip if logged
+        if e.href in event_log:
+            continue
+        # add event to google calendar
         event = {
             'summary':e.title,
             'description':e.content,
@@ -54,5 +67,11 @@ def main():
         }
         event = service.events().insert(calendarId=goog_cal['id'], body=event).execute()
 
+        # append to event log
+        with open('event_log.txt', 'a') as f:
+            f.write(e.href+"\n")
+            f.close()
+        
 if __name__ == '__main__':
+    CAL_ID = secret.CAL_ID
     main()

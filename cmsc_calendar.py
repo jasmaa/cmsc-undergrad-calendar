@@ -1,6 +1,5 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
-import pprint
 import time
 import dateparser
 
@@ -21,13 +20,15 @@ class Event():
         self.end_time = et
         self.href = href
 
-    def __str__(self):
-        return self.title + ": " + self.content
-
+    # Convert time to google api time
     def get_start(self):
         return "T".join(str(self.start_time).split(" "))
     def get_end(self):
         return "T".join(str(self.end_time).split(" "))
+
+    def __str__(self):
+        return self.title + ": " + self.content
+
 
 class Calendar():
     """
@@ -39,8 +40,8 @@ class Calendar():
     def __init__(self):
         self.events = []
 
+    # Connects to umd cs undergrad site
     def connect(self):
-        # connects to umd cs undergrad site
         base = "http://undergrad.cs.umd.edu"
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
@@ -50,10 +51,8 @@ class Calendar():
         event_links = self.get_event_links(driver, base)
         self.parse_events(driver, base, event_links)
 
-        #webdriver.quit()
-
+    # Gets list of event links
     def get_event_links(self, driver, base):
-        # gets list of event links
         event_links = set()
         
         for _ in range(12):
@@ -70,9 +69,9 @@ class Calendar():
             driver.find_element_by_class_name('icon-after').click()
 
         return event_links
-        
+
+    # Parses events into calendar
     def parse_events(self, driver, base, event_links):
-        # parses events into calendar
         for link in event_links:
             driver.get(base+link)
             s = BeautifulSoup(driver.page_source, 'html.parser')
@@ -100,6 +99,7 @@ class Calendar():
             self.events.append(event)
             
     @staticmethod
+    # Convert raw time to datetime obj
     def parse_time(single, start, end):
         # all day, range
         if single == None:
